@@ -115,3 +115,24 @@ VITE_API_URL=https://YOUR-API.onrender.com/api
 ## Production repository
 
 GitHub: `SanjiGugich/kinotracker`. Production uses PostgreSQL; local development uses SQLite unless `DATABASE_URL` is set.
+
+
+## Production status
+
+Онлайн-версия развернута и проверена:
+
+- Сайт: https://kinotracker-web.onrender.com
+- API: https://kinotracker-api.onrender.com/api/
+- Health check: https://kinotracker-api.onrender.com/api/health/
+- GitHub: https://github.com/SanjiGugich/kinotracker
+
+Production backend использует PostgreSQL.
+
+Проверка сохранения данных после принудительного redeploy:
+
+- до регистрации: users=0, library_entries=0;
+- после регистрации и работы с личным списком: users=1, library_entries=3;
+- после нового deploy значения сохранились;
+- backend подтвердил: Database backend: postgresql.
+
+Таким образом, аккаунты пользователей и их персональные списки не зависят от жизненного цикла Django-инстанса и хранятся в PostgreSQL.
