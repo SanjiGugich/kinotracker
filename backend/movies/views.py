@@ -143,6 +143,8 @@ class ProfileView(APIView):
             'planned': library.filter(status=UserMovie.Status.PLANNED).count(),
             'watching': library.filter(status=UserMovie.Status.WATCHING).count(),
             'watched': library.filter(status=UserMovie.Status.WATCHED).count(),
+            'postponed': library.filter(status=UserMovie.Status.POSTPONED).count(),
+            'dropped': library.filter(status=UserMovie.Status.DROPPED).count(),
             'favorites': library.filter(favorite=True).count(),
             'average_rating': library.filter(user_rating__isnull=False).aggregate(v=Avg('user_rating'))['v'],
         }

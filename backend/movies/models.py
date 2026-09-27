@@ -29,6 +29,8 @@ class UserMovie(models.Model):
         PLANNED='planned','Хочу посмотреть'
         WATCHING='watching','Смотрю'
         WATCHED='watched','Просмотрено'
+        POSTPONED='postponed','Отложено'
+        DROPPED='dropped','Брошено'
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='movie_library')
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='user_entries')
