@@ -4,13 +4,12 @@ from .models import Movie, UserMovie
 
 class MovieSerializer(serializers.ModelSerializer):
     poster_url = serializers.SerializerMethodField()
-    still_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Movie
         fields = [
             'id','title','original_title','year','description','genre','country','director',
-            'actors','duration','poster_url','still_url','trailer_url','site_rating','is_featured'
+            'actors','duration','poster_url','trailer_url','site_rating','is_featured'
         ]
 
     def _asset_url(self, obj, kind):
@@ -20,9 +19,6 @@ class MovieSerializer(serializers.ModelSerializer):
 
     def get_poster_url(self, obj):
         return self._asset_url(obj, 'poster')
-
-    def get_still_url(self, obj):
-        return self._asset_url(obj, 'still')
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
