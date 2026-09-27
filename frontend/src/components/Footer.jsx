@@ -1,0 +1,1 @@
+export default function Footer(){return <footer className='site-footer'><div className='container d-flex flex-column flex-md-row justify-content-between gap-2'><span>© 2026 КиноТрекер</span><span>React · Django REST · PostgreSQL / SQLite</span></div></footer>}

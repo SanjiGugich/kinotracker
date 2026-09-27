@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: kinotracker-api
+    runtime: python
+    rootDir: backend
+    buildCommand: bash build.sh
+    startCommand: gunicorn kinotrack.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    healthCheckPath: /api/health/
