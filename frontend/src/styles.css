@@ -34,3 +34,7 @@
   .library-control-grid{grid-template-columns:1fr;}
   .library-save-btn{grid-column:auto;}
 }
+
+.page-state{display:grid;place-items:center;min-height:180px;color:var(--muted);font-size:1rem;text-align:center;}
+.not-found{max-width:620px;padding:2rem 0;}
+.not-found p{color:var(--muted);font-size:1.05rem;line-height:1.7;margin-bottom:1.4rem;}

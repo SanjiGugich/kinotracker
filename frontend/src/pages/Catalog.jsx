@@ -82,9 +82,9 @@ export default function Catalog() {
       </div>
 
       {error ? (
-        <ErrorState message={error} />
+        <ErrorState message={error} compact />
       ) : loading ? (
-        <LoadingState text="Загружаем каталог…" />
+        <LoadingState text="Загружаем каталог…" compact />
       ) : (
         <div className="movie-grid">
           {movies.map((movie) => (
