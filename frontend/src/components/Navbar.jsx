@@ -1,2 +1,60 @@
-import {Link,NavLink,useNavigate} from 'react-router-dom'; import {useAuth} from '../AuthContext';
-export default function Navbar(){const {user,logout}=useAuth();const nav=useNavigate();const exit=async()=>{await logout();nav('/');};return <nav className="navbar navbar-expand-lg navbar-dark sticky-top cinema-nav"><div className="container"><Link className="navbar-brand brand" to="/">КИНО<span>ТРЕКЕР</span></Link><button className="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav"><span className="navbar-toggler-icon"/></button><div className="collapse navbar-collapse" id="nav"><div className="navbar-nav ms-auto align-items-lg-center gap-lg-2"><NavLink className="nav-link" to="/">Главная</NavLink><NavLink className="nav-link" to="/catalog">Фильмы</NavLink><NavLink className="nav-link" to="/ratings">Рейтинг</NavLink><NavLink className="nav-link" to="/library">Мой список</NavLink>{user?<><Link className="user-chip" to="/profile">{user.first_name||user.username}</Link><button className="btn btn-sm btn-outline-light" onClick={exit}>Выйти</button></>:<Link className="btn btn-sm btn-danger ms-lg-2" to="/login">Войти</Link>}</div></div></div></nav>;}
+import {Link, NavLink, useNavigate} from 'react-router-dom';
+
+import {useAuth} from '../AuthContext';
+
+
+export default function Navbar() {
+  const {user, logout} = useAuth();
+  const navigate = useNavigate();
+
+  const exit = async () => {
+    await logout();
+    navigate('/');
+  };
+
+  return (
+    <nav className="navbar navbar-expand-lg navbar-dark sticky-top cinema-nav">
+      <div className="container">
+        <Link className="navbar-brand brand" to="/">
+          КИНО<span>ТРЕКЕР</span>
+        </Link>
+
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#nav"
+          aria-controls="nav"
+          aria-expanded="false"
+          aria-label="Открыть меню"
+        >
+          <span className="navbar-toggler-icon" />
+        </button>
+
+        <div className="collapse navbar-collapse" id="nav">
+          <div className="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+            <NavLink className="nav-link" to="/">Главная</NavLink>
+            <NavLink className="nav-link" to="/catalog">Фильмы</NavLink>
+            <NavLink className="nav-link" to="/ratings">Рейтинг</NavLink>
+            <NavLink className="nav-link" to="/library">Мой список</NavLink>
+
+            {user ? (
+              <>
+                <Link className="user-chip" to="/profile">
+                  {user.first_name || user.username}
+                </Link>
+                <button type="button" className="btn btn-sm btn-outline-light" onClick={exit}>
+                  Выйти
+                </button>
+              </>
+            ) : (
+              <Link className="btn btn-sm btn-danger ms-lg-2" to="/login">
+                Войти
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}
