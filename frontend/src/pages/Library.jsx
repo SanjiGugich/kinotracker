@@ -1,24 +1,43 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 
 import {api} from '../api';
 import {useAuth} from '../AuthContext';
+import {ErrorState, LoadingState} from '../components/PageState';
 import {MOVIE_STATUSES, STATUS_LABELS} from '../constants';
 import {posterFor} from '../posterData';
 
 
 export default function Library() {
-  const {user, loading} = useAuth();
+  const {user, loading: authLoading} = useAuth();
+
   const [items, setItems] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (user) {
-      api('/library/').then(setItems);
+  const load = useCallback(async () => {
+    if (!user) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      setItems(await api('/library/'));
+    } catch (loadError) {
+      setError(loadError.message);
+    } finally {
+      setLoading(false);
     }
   }, [user]);
 
-  if (loading) return null;
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  if (authLoading) {
+    return <LoadingState text="Проверяем аккаунт…" />;
+  }
 
   if (!user) {
     return (
@@ -29,14 +48,26 @@ export default function Library() {
     );
   }
 
+  if (loading) {
+    return <LoadingState text="Загружаем ваш список…" />;
+  }
+
+  if (error) {
+    return <ErrorState message={error} onRetry={load} />;
+  }
+
   const shown = items.filter((entry) => (
     filter === 'all'
       || (filter === 'favorite' ? entry.favorite : entry.status === filter)
   ));
 
   const removeMovie = async (entry) => {
-    await api(`/library/${entry.movie.id}/`, {method: 'DELETE'});
-    setItems((current) => current.filter((item) => item.id !== entry.id));
+    try {
+      await api(`/library/${entry.movie.id}/`, {method: 'DELETE'});
+      setItems((current) => current.filter((item) => item.id !== entry.id));
+    } catch (removeError) {
+      setError(removeError.message);
+    }
   };
 
   return (
