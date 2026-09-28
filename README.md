@@ -1,144 +1,108 @@
-# КиноТрекер v10
+# КиноТрекер
 
-Полноценное клиент-серверное веб-приложение каталога фильмов: React + Django REST API.
+Клиент-серверное учебное веб-приложение для каталога фильмов и персонального учёта просмотра.
+
+## Стек
+
+- frontend: React, React Router, Bootstrap, Vite;
+- backend: Django, Django REST Framework;
+- авторизация: DRF TokenAuthentication;
+- локальная БД: SQLite;
+- production БД: PostgreSQL;
+- production: Render.
 
 ## Возможности
 
-- каталог и поиск фильмов;
+- каталог из 35 фильмов;
+- поиск и фильтрация по жанрам;
 - рекомендации и рейтинг;
-- подробная страница фильма и актёрский состав;
-- лёгкие SVG-обложки генерируются API и не требуют внешнего файлового хранилища;
-- регистрация и вход;
-- постоянные аккаунты пользователей;
-- персональные статусы «Хочу посмотреть / Смотрю / Просмотрено»;
-- избранное и личная оценка;
-- профиль и статистика пользователя;
+- отдельная страница фильма;
+- регистрация, вход, выход и профиль;
+- персональные статусы: «Хочу посмотреть», «Смотрю», «Просмотрено», «Отложено», «Брошено»;
+- отметка «Любимое»;
+- личная оценка 1–10;
+- фильтрация личного списка;
+- статистика пользователя;
 - Django Admin;
-- локальный запуск для защиты;
-- подготовка к Vercel + Render + PostgreSQL.
+- адаптивный интерфейс.
 
-## Почему пользователи не пропадают
+## Архитектура
 
-Локально Django хранит пользователей, пароли (в виде безопасных хэшей), токены и личные списки в `backend/db.sqlite3`. Обычный `start-windows.bat` **не удаляет и не пересоздаёт эту базу**.
+```text
+React frontend
+      |
+      | HTTP / JSON
+      v
+Django REST API
+      |
+      | Django ORM
+      v
+SQLite (локально) / PostgreSQL (production)
+```
 
-В онлайне нужно использовать PostgreSQL. `DATABASE_URL` автоматически переключает Django с SQLite на PostgreSQL. Поэтому аккаунты и списки сохраняются при перезапусках и новых деплоях сервера.
+WebSocket в проекте не используется: все операции выполняются обычными REST-запросами.
 
-> Не удаляйте `backend/db.sqlite3`, если хотите сохранить локальных пользователей.
+## Постеры
+
+Все 35 постеров хранятся отдельными WebP-файлами:
+
+```text
+frontend/public/posters/
+```
+
+Файл `frontend/src/posterData.js` содержит только соответствие между названием фильма и путём к постеру. Backend изображения фильмов не хранит.
+
+## Основные API
+
+- `GET /api/health/` — проверка backend;
+- `GET /api/movies/` — каталог;
+- `GET /api/movies/<id>/` — фильм;
+- `GET /api/movies/recommended/` — 3 рекомендации;
+- `GET /api/movies/popular/` — популярные фильмы;
+- `GET /api/movies/genres/` — список жанров;
+- `POST /api/auth/register/` — регистрация;
+- `POST /api/auth/login/` — вход;
+- `POST /api/auth/logout/` — выход;
+- `GET /api/auth/me/` — текущий пользователь;
+- `GET/PATCH /api/auth/profile/` — профиль;
+- `GET/POST /api/library/` — личный список;
+- `DELETE /api/library/<movie_id>/` — удалить фильм из личного списка.
 
 ## Первый запуск Windows
 
-1. Установите Python и Node.js.
-2. Один раз запустите `setup-windows.bat`.
-3. После завершения используйте только `start-windows.bat`.
-4. Для остановки — `stop-windows.bat`.
+Требуются Python и Node.js.
 
-При обычном запуске:
+1. Один раз запустите `setup-windows.bat`.
+2. Для обычного запуска используйте `start-windows.bat`.
+3. Для остановки используйте `stop-windows.bat`.
 
-- Django проверяет миграции;
-- каталог заполняется **только если таблица фильмов пуста**;
-- сервер ждёт готовности API;
-- затем запускается React;
-- браузер открывается автоматически.
+Локальные адреса:
 
-## Адреса локально
+- сайт: `http://127.0.0.1:5173/`;
+- API: `http://127.0.0.1:8000/api/`;
+- health check: `http://127.0.0.1:8000/api/health/`;
+- admin: `http://127.0.0.1:8000/admin/`.
 
-- сайт: `http://127.0.0.1:5173/`
-- API: `http://127.0.0.1:8000/api/`
-- проверка API: `http://127.0.0.1:8000/api/health/`
-- Django Admin: `http://127.0.0.1:8000/admin/`
+## База данных
 
-Создание администратора:
+Если переменная `DATABASE_URL` не задана, Django использует `backend/db.sqlite3`.
 
-```bat
-cd backend
-.venv\Scripts\activate
-python manage.py createsuperuser
-```
+Если `DATABASE_URL` задана, используется PostgreSQL. Production-версия работает именно так, поэтому пользователи, статусы, оценки и «Любимое» сохраняются после redeploy backend.
 
-## GitHub
+## Production
 
-Создайте пустой репозиторий и из корня проекта выполните:
-
-```bash
-git init
-git add .
-git commit -m "KinoTracker v10"
-git branch -M main
-git remote add origin https://github.com/SanjiGugich/kinotracker.git
-git push -u origin main
-```
-
-`.gitignore` уже исключает локальную БД, `.venv`, `node_modules` и секреты.
-
-## Backend онлайн: Render + PostgreSQL
-
-В корне есть `render.yaml`.
-
-1. На Render выберите **New > Blueprint** и репозиторий GitHub.
-2. Render создаст backend и PostgreSQL.
-3. В переменных backend задайте:
-   - `CORS_ALLOWED_ORIGINS=https://YOUR-FRONTEND.vercel.app`
-   - `CSRF_TRUSTED_ORIGINS=https://YOUR-FRONTEND.vercel.app`
-4. `DATABASE_URL` будет взят из PostgreSQL автоматически.
-5. Проверка после деплоя: `https://YOUR-API.onrender.com/api/health/`.
-
-Во время build Render автоматически выполняет миграции и заполнит каталог только при пустой БД.
-
-## Frontend онлайн: Vercel
-
-1. Импортируйте тот же GitHub-репозиторий в Vercel.
-2. Root Directory: `frontend`.
-3. Build command: `npm run build`.
-4. Output Directory: `dist`.
-5. Добавьте environment variable:
-
-```text
-VITE_API_URL=https://YOUR-API.onrender.com/api
-```
-
-6. После получения домена Vercel добавьте его в `CORS_ALLOWED_ORIGINS` backend на Render.
-
-`frontend/vercel.json` уже настроен для React Router.
-
-## Важное различие локальной и онлайн-базы
-
-Локальная SQLite и онлайн PostgreSQL — разные базы. Поэтому пользователь, созданный локально, автоматически не появляется онлайн. После публикации реальные пользователи регистрируются в онлайн-версии и остаются в PostgreSQL.
-
-## Для защиты
-
-Рекомендуется держать оба варианта:
-
-- публичную онлайн-ссылку Vercel;
-- локальную копию и `start-windows.bat` на ноутбуке, чтобы защита не зависела от интернета.
-
-
-## Production repository
-
-GitHub: `SanjiGugich/kinotracker`. Production uses PostgreSQL; local development uses SQLite unless `DATABASE_URL` is set.
-
-
-## Production status
-
-Онлайн-версия развернута и проверена:
-
-- Сайт: https://kinotracker-web.onrender.com
+- сайт: https://kinotracker-web.onrender.com
 - API: https://kinotracker-api.onrender.com/api/
-- Health check: https://kinotracker-api.onrender.com/api/health/
 - GitHub: https://github.com/SanjiGugich/kinotracker
 
-Production backend использует PostgreSQL.
+## Структура
 
-Проверка сохранения данных после принудительного redeploy:
-
-- до регистрации: users=0, library_entries=0;
-- после регистрации и работы с личным списком: users=1, library_entries=3;
-- после нового deploy значения сохранились;
-- backend подтвердил: Database backend: postgresql.
-
-Таким образом, аккаунты пользователей и их персональные списки не зависят от жизненного цикла Django-инстанса и хранятся в PostgreSQL.
-
-
-## Демонстрационная версия с постерами
-
-Текущая версия использует 35 постеров, предоставленных автором проекта. Постеры оптимизированы в WebP и хранятся отдельными файлами в `frontend/public/posters/`. В JavaScript хранится только соответствие «название фильма → путь к постеру». Кадры из фильмов из интерфейса удалены.
-
+```text
+backend/
+  kinotrack/       настройки Django
+  movies/          модели, serializers, API, миграции, tests
+frontend/
+  public/posters/  WebP-постеры
+  src/components/  переиспользуемые компоненты
+  src/pages/       страницы приложения
+```

@@ -36,6 +36,7 @@ export const POSTERS = {
   "Одержимость": "/posters/whiplash-2014.webp"
 };
 
-export function posterFor(movie){
-  return POSTERS[movie?.title] || movie?.poster_url || '';
+
+export function posterFor(movie) {
+  return POSTERS[movie?.title] || "";
 }

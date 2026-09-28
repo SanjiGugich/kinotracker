@@ -1,15 +1,16 @@
 @echo off
 setlocal
 set "ROOT=%~dp0"
+
 where python >nul 2>nul || (echo Python not found. Install Python and retry.& pause & exit /b 1)
 where npm >nul 2>nul || (echo Node.js/npm not found. Install Node.js and retry.& pause & exit /b 1)
 
 cd /d "%ROOT%backend"
 if not exist ".venv\Scripts\python.exe" python -m venv .venv
-call ".venv\Scripts\activate.bat"
-python -m pip install -r requirements.txt || goto :fail
-python manage.py migrate || goto :fail
-python manage.py ensure_seeded || goto :fail
+
+".venv\Scripts\python.exe" -m pip install -r requirements.txt || goto :fail
+".venv\Scripts\python.exe" manage.py migrate || goto :fail
+".venv\Scripts\python.exe" manage.py ensure_seeded || goto :fail
 
 cd /d "%ROOT%frontend"
 if not exist "node_modules" npm install || goto :fail
