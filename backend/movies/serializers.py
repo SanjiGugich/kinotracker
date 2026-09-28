@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from .models import Movie, UserMovie
@@ -24,13 +25,17 @@ class MovieSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=6)
+    password = serializers.CharField(write_only=True, min_length=8)
     password_confirm = serializers.CharField(write_only=True)
     first_name = serializers.CharField(required=False, allow_blank=True, max_length=150)
 
     class Meta:
         model = User
         fields = ["username", "first_name", "email", "password", "password_confirm"]
+
+    def validate_password(self, value):
+        validate_password(value)
+        return value
 
     def validate_username(self, value):
         value = value.strip()

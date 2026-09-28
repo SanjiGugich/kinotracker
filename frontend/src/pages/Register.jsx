@@ -87,7 +87,7 @@ export default function Register() {
           <input
             className="form-control mb-3"
             type="password"
-            minLength="6"
+            minLength="8"
             placeholder="Пароль"
             value={form.password}
             onChange={updateField('password')}
@@ -98,7 +98,7 @@ export default function Register() {
           <input
             className="form-control mb-3"
             type="password"
-            minLength="6"
+            minLength="8"
             placeholder="Повторите пароль"
             value={form.password_confirm}
             onChange={updateField('password_confirm')}
